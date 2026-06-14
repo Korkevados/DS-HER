@@ -231,3 +231,7 @@ data/
 
 # generated large feature matrices (reproducible via fourier_model.py)
 hw3_fourier/outputs/*.csv
+
+# SLURM bundle: dataset (270MB, also matched by data/ above) + generated run outputs
+transformer + fouria/data/
+transformer + fouria/outputs/
