@@ -1,0 +1,303 @@
+{
+  "config": {
+    "device": "cuda",
+    "fast": false,
+    "epochs": {
+      "main": 20,
+      "ablation": 10,
+      "patch": 20,
+      "cnn": 20,
+      "sensor": 8,
+      "fourier": 20
+    },
+    "seed": 42,
+    "dataset": "/home/potashda/DS-HAR/transformer + fouria/data/UCI HAR Dataset",
+    "selected_6_features": [
+      "tBodyAcc-max()-X",
+      "tGravityAcc-min()-Y",
+      "tBodyAccJerk-max()-X",
+      "tGravityAcc-max()-Y",
+      "tBodyAccMag-max()",
+      "tGravityAccMag-max()"
+    ],
+    "selected_6_cols": [
+      9,
+      53,
+      89,
+      50,
+      203,
+      216
+    ]
+  },
+  "main_transformer_report": {
+    "WALKING": {
+      "precision": 0.9204301075268817,
+      "recall": 0.8629032258064516,
+      "f1-score": 0.890738813735692,
+      "support": 496.0
+    },
+    "WALKING_UPSTAIRS": {
+      "precision": 0.9422632794457275,
+      "recall": 0.8662420382165605,
+      "f1-score": 0.9026548672566371,
+      "support": 471.0
+    },
+    "WALKING_DOWNSTAIRS": {
+      "precision": 0.7910750507099391,
+      "recall": 0.9285714285714286,
+      "f1-score": 0.8543263964950711,
+      "support": 420.0
+    },
+    "SITTING": {
+      "precision": 0.8515981735159818,
+      "recall": 0.7596741344195519,
+      "f1-score": 0.8030139935414424,
+      "support": 491.0
+    },
+    "STANDING": {
+      "precision": 0.8037865748709122,
+      "recall": 0.8778195488721805,
+      "f1-score": 0.839173405211141,
+      "support": 532.0
+    },
+    "LAYING": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 537.0
+    },
+    "accuracy": 0.8832711231761113,
+    "macro avg": {
+      "precision": 0.884858864344907,
+      "recall": 0.8825350626476957,
+      "f1-score": 0.8816512460399973,
+      "support": 2947.0
+    },
+    "weighted avg": {
+      "precision": 0.8874584391849738,
+      "recall": 0.8832711231761113,
+      "f1-score": 0.8834387862300253,
+      "support": 2947.0
+    }
+  },
+  "main_transformer_ece": 0.04836887086817154,
+  "ablation": [
+    {
+      "name": "A1_no_pos_mean",
+      "pe_type": "none",
+      "pooling": "mean",
+      "patch_size": 1,
+      "num_layers": 2,
+      "nhead": 4,
+      "params": 68102,
+      "val_accuracy": 0.8934240362811792,
+      "val_macro_f1": 0.8973625200783375
+    },
+    {
+      "name": "A2_sinusoidal_mean",
+      "pe_type": "sinusoidal",
+      "pooling": "mean",
+      "patch_size": 1,
+      "num_layers": 2,
+      "nhead": 4,
+      "params": 68102,
+      "val_accuracy": 0.9143990929705216,
+      "val_macro_f1": 0.9134358672132108
+    },
+    {
+      "name": "A3_learnable_mean",
+      "pe_type": "learnable",
+      "pooling": "mean",
+      "patch_size": 1,
+      "num_layers": 2,
+      "nhead": 4,
+      "params": 76294,
+      "val_accuracy": 0.9223356009070295,
+      "val_macro_f1": 0.9251306062480471
+    },
+    {
+      "name": "A4_sinusoidal_cls",
+      "pe_type": "sinusoidal",
+      "pooling": "cls",
+      "patch_size": 1,
+      "num_layers": 2,
+      "nhead": 4,
+      "params": 68166,
+      "val_accuracy": 0.9172335600907029,
+      "val_macro_f1": 0.9214145145920085
+    },
+    {
+      "name": "A5_patch8_sinusoidal_cls",
+      "pe_type": "sinusoidal",
+      "pooling": "cls",
+      "patch_size": 8,
+      "num_layers": 2,
+      "nhead": 4,
+      "params": 72198,
+      "val_accuracy": 0.9336734693877551,
+      "val_macro_f1": 0.9367813052858297
+    },
+    {
+      "name": "A6_deeper_4layers_cls",
+      "pe_type": "sinusoidal",
+      "pooling": "cls",
+      "patch_size": 1,
+      "num_layers": 4,
+      "nhead": 4,
+      "params": 135110,
+      "val_accuracy": 0.9172335600907029,
+      "val_macro_f1": 0.9158083314097376
+    },
+    {
+      "name": "A7_more_heads_8_cls",
+      "pe_type": "sinusoidal",
+      "pooling": "cls",
+      "patch_size": 1,
+      "num_layers": 2,
+      "nhead": 8,
+      "params": 68166,
+      "val_accuracy": 0.9223356009070295,
+      "val_macro_f1": 0.9234069265434067
+    }
+  ],
+  "sensor_ablation": [
+    {
+      "sensor_group": "all_sensors",
+      "n_channels": 9,
+      "test_accuracy": 0.8819138106549033,
+      "test_macro_f1": 0.8805281941995987
+    },
+    {
+      "sensor_group": "acceleration_only_total_plus_body",
+      "n_channels": 6,
+      "test_accuracy": 0.839837122497455,
+      "test_macro_f1": 0.8355190578500209
+    },
+    {
+      "sensor_group": "gyroscope_only",
+      "n_channels": 3,
+      "test_accuracy": 0.48829317950458095,
+      "test_macro_f1": 0.48401440230794956
+    },
+    {
+      "sensor_group": "total_acc_only",
+      "n_channels": 3,
+      "test_accuracy": 0.7943671530369868,
+      "test_macro_f1": 0.7890453803548702
+    },
+    {
+      "sensor_group": "body_acc_only",
+      "n_channels": 3,
+      "test_accuracy": 0.5727858839497795,
+      "test_macro_f1": 0.5300418571399014
+    }
+  ],
+  "fourier_transformer_report": {
+    "WALKING": {
+      "precision": 0.8504854368932039,
+      "recall": 0.8830645161290323,
+      "f1-score": 0.8664688427299704,
+      "support": 496.0
+    },
+    "WALKING_UPSTAIRS": {
+      "precision": 0.9249394673123487,
+      "recall": 0.8110403397027601,
+      "f1-score": 0.8642533936651584,
+      "support": 471.0
+    },
+    "WALKING_DOWNSTAIRS": {
+      "precision": 0.8358531317494601,
+      "recall": 0.9214285714285714,
+      "f1-score": 0.8765571913929785,
+      "support": 420.0
+    },
+    "SITTING": {
+      "precision": 0.9119496855345912,
+      "recall": 0.8859470468431772,
+      "f1-score": 0.8987603305785123,
+      "support": 491.0
+    },
+    "STANDING": {
+      "precision": 0.9003690036900369,
+      "recall": 0.9172932330827067,
+      "f1-score": 0.9087523277467412,
+      "support": 532.0
+    },
+    "LAYING": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 537.0
+    },
+    "accuracy": 0.9049881235154394,
+    "macro avg": {
+      "precision": 0.9039327875299401,
+      "recall": 0.9031289511977079,
+      "f1-score": 0.9024653476855602,
+      "support": 2947.0
+    },
+    "weighted avg": {
+      "precision": 0.9067896799112665,
+      "recall": 0.9049881235154394,
+      "f1-score": 0.90489768424524,
+      "support": 2947.0
+    }
+  },
+  "final_comparison": [
+    {
+      "model": "Logistic Regression - 6 selected features",
+      "accuracy": 0.7869019341703427,
+      "macro_f1": 0.7850561386615981
+    },
+    {
+      "model": "Random Forest - 6 selected features",
+      "accuracy": 0.7417712928401764,
+      "macro_f1": 0.7392663328797031
+    },
+    {
+      "model": "Main Transformer - timestep tokens, CLS",
+      "accuracy": 0.8832711231761113,
+      "macro_f1": 0.8816512460399973
+    },
+    {
+      "model": "Patch Transformer - patch size 8, CLS",
+      "accuracy": 0.9005768578215134,
+      "macro_f1": 0.8993647469887477
+    },
+    {
+      "model": "CNN-Transformer Hybrid - Conv1D + CLS Transformer",
+      "accuracy": 0.8958262639972854,
+      "macro_f1": 0.895894093298604
+    },
+    {
+      "model": "Sensor ablation - all_sensors",
+      "accuracy": 0.8819138106549033,
+      "macro_f1": 0.8805281941995987
+    },
+    {
+      "model": "Sensor ablation - acceleration_only_total_plus_body",
+      "accuracy": 0.839837122497455,
+      "macro_f1": 0.8355190578500209
+    },
+    {
+      "model": "Sensor ablation - gyroscope_only",
+      "accuracy": 0.48829317950458095,
+      "macro_f1": 0.48401440230794956
+    },
+    {
+      "model": "Sensor ablation - total_acc_only",
+      "accuracy": 0.7943671530369868,
+      "macro_f1": 0.7890453803548702
+    },
+    {
+      "model": "Sensor ablation - body_acc_only",
+      "accuracy": 0.5727858839497795,
+      "macro_f1": 0.5300418571399014
+    },
+    {
+      "model": "Fourier+Transformer - Time+FFT Fusion",
+      "accuracy": 0.9049881235154394,
+      "macro_f1": 0.9024653476855602
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "selected_features": [
+    "tBodyAcc-max()-X",
+    "tGravityAcc-min()-Y",
+    "tBodyAccJerk-max()-X",
+    "tGravityAcc-max()-Y",
+    "tBodyAccMag-max()",
+    "tGravityAccMag-max()"
+  ],
+  "selected_columns": [
+    9,
+    53,
+    89,
+    50,
+    203,
+    216
+  ],
+  "mutual_information": {
+    "tBodyAcc-max()-X": 1.006893435380283,
+    "tGravityAcc-min()-Y": 0.9442190265864847,
+    "tBodyAccJerk-max()-X": 0.9378572404254588,
+    "tGravityAcc-max()-Y": 0.9283464035207594,
+    "tBodyAccMag-max()": 0.9046768621297239,
+    "tGravityAccMag-max()": 0.9046428577771668
+  },
+  "comparison": [
+    {
+      "model": "LogisticRegression",
+      "acc_6feat": 0.7869019341703427,
+      "f1_6feat": 0.7850561386615981,
+      "acc_561feat": 0.9562266711910418,
+      "f1_561feat": 0.9557414704655088
+    },
+    {
+      "model": "RandomForest",
+      "acc_6feat": 0.7427892772310825,
+      "f1_6feat": 0.7402050133227854,
+      "acc_561feat": 0.9287410926365796,
+      "f1_561feat": 0.9270135651136432
+    },
+    {
+      "model": "SVM_RBF",
+      "acc_6feat": 0.7865626060400407,
+      "f1_6feat": 0.7838026901459133,
+      "acc_561feat": 0.9541907024092298,
+      "f1_561feat": 0.9532663313587092
+    }
+  ],
+  "best_6feature_model": "LogisticRegression"
+}

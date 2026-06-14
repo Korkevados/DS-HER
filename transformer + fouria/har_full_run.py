@@ -85,6 +85,16 @@ CLASS_NAMES = [
     "SITTING", "STANDING", "LAYING",
 ]
 
+# Reduced engineered-feature set: the 6 most informative of the 561 features,
+# selected by mutual information on the TRAIN set (see baselines/select6_features.py).
+# Columns are 0-based indices into X_{train,test}.txt; the classical baselines
+# (Logistic Regression, Random Forest) use ONLY these 6 features.
+SELECTED_6_COLS = [9, 53, 89, 50, 203, 216]
+SELECTED_6_NAMES = [
+    "tBodyAcc-max()-X", "tGravityAcc-min()-Y", "tBodyAccJerk-max()-X",
+    "tGravityAcc-max()-Y", "tBodyAccMag-max()", "tGravityAccMag-max()",
+]
+
 # globals filled in main()
 DEVICE: torch.device = torch.device("cpu")
 OUT: Path = Path("outputs")
@@ -534,28 +544,35 @@ def main():
     print("Engineered:", X_tr_feat.shape, X_te_feat.shape, "| Raw:", X_tr_raw.shape, X_te_raw.shape)
 
     metrics: Dict[str, object] = {"config": {"device": str(DEVICE), "fast": args.fast,
-                                             "epochs": E, "seed": seed, "dataset": str(base)}}
+                                             "epochs": E, "seed": seed, "dataset": str(base),
+                                             "selected_6_features": SELECTED_6_NAMES,
+                                             "selected_6_cols": SELECTED_6_COLS}}
     leaderboard: List[Dict] = []
 
-    # ---- Baseline 1: Logistic Regression on engineered features ----
-    print("\n[1/8] Logistic Regression (561 engineered features)")
+    # Reduce the 561 engineered features to the 6 selected ones (classical track).
+    X_tr_feat6 = X_tr_feat[:, SELECTED_6_COLS]
+    X_te_feat6 = X_te_feat[:, SELECTED_6_COLS]
+    print("\nClassical track uses ONLY these 6 features:")
+    for i, n in enumerate(SELECTED_6_NAMES, 1):
+        print(f"   {i}. {n}")
+
+    # ---- Baseline 1: Logistic Regression on the 6 selected features ----
+    print("\n[1/8] Logistic Regression (6 selected features)")
     sc = StandardScaler()
-    lr = LogisticRegression(max_iter=1000, n_jobs=-1, C=2.0)
-    lr.fit(sc.fit_transform(X_tr_feat), y_train)
-    p = lr.predict(sc.transform(X_te_feat))
-    leaderboard.append({"model": "Logistic Regression - 561 engineered features",
+    lr = LogisticRegression(max_iter=2000, n_jobs=-1, C=2.0)
+    lr.fit(sc.fit_transform(X_tr_feat6), y_train)
+    p = lr.predict(sc.transform(X_te_feat6))
+    leaderboard.append({"model": "Logistic Regression - 6 selected features",
                         "accuracy": accuracy_score(y_test, p), "macro_f1": f1_score(y_test, p, average="macro")})
     print("   acc {:.4f}  macroF1 {:.4f}".format(leaderboard[-1]["accuracy"], leaderboard[-1]["macro_f1"]))
 
-    # ---- Baseline 2: Random Forest on handcrafted FFT features ----
-    print("\n[2/8] Random Forest (handcrafted time+FFT features)")
-    X_tr_hand = make_signal_features(X_tr_raw)
-    X_te_hand = make_signal_features(X_te_raw)
+    # ---- Baseline 2: Random Forest on the same 6 selected features ----
+    print("\n[2/8] Random Forest (6 selected features)")
     rf = RandomForestClassifier(n_estimators=300 if args.fast else 600, min_samples_leaf=2,
                                 random_state=seed, n_jobs=-1)
-    rf.fit(X_tr_hand, y_train)
-    p = rf.predict(X_te_hand)
-    leaderboard.append({"model": "Random Forest - handcrafted time + FFT features",
+    rf.fit(X_tr_feat6, y_train)
+    p = rf.predict(X_te_feat6)
+    leaderboard.append({"model": "Random Forest - 6 selected features",
                         "accuracy": accuracy_score(y_test, p), "macro_f1": f1_score(y_test, p, average="macro")})
     print("   acc {:.4f}  macroF1 {:.4f}".format(leaderboard[-1]["accuracy"], leaderboard[-1]["macro_f1"]))
 

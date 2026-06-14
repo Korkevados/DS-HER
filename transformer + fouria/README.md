@@ -7,8 +7,8 @@ result (metrics + plots) to `outputs/`.
 ## What it runs
 | # | Model | Input |
 |---|-------|-------|
-| 1 | Logistic Regression | 561 UCI engineered features |
-| 2 | Random Forest | handcrafted time + FFT features |
+| 1 | Logistic Regression | **6 selected features** (top-6 of 561 by mutual information) |
+| 2 | Random Forest | **same 6 selected features** |
 | 3 | Main Transformer (CLS, sinusoidal PE) | raw 128×9 windows |
 | 4 | Ablation study (7 configs, validation-only) | raw 128×9 |
 | 5 | Patch Transformer (patch size 8) | raw 128×9 |

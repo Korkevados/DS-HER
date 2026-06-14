@@ -1,0 +1,169 @@
+------------------------------------
+Sun 14 Jun 2026 22:55:05 IDT
+SLURM_JOBID:		18163885
+SLURM_JOB_NODELIST:	dt-2080-16
+SLURM_SCRATCH_DIR:	
+Allocated Resouces:	cpu - 8 / mem - 32768 MB / gpu - 1
+SLURM_GPU_INDEX:	0
+Running as potashda from 4th-year-proj account with normal QOS
+------------------------------------
+==========================================================
+ host       : dt-2080-16.auth.ad.bgu.ac.il
+ conda env  : daniel_env
+ which py   : /home/potashda/.conda/envs/daniel_env/bin/python
+ python ver : 3.11.15
+ torch      : 2.6.0+cu124 | cuda: True
+ cpus       : 8
+ pwd        : /home/potashda
+ started    : Sun 14 Jun 2026 22:55:11 IDT
+==========================================================
+======================================================================
+Device: cuda | fast: False | out: /home/potashda/DS-HAR/transformer + fouria/outputs
+GPU: NVIDIA GeForce RTX 2080 Ti
+Dataset: /home/potashda/DS-HAR/transformer + fouria/data/UCI HAR Dataset
+Engineered: (7352, 561) (2947, 561) | Raw: (7352, 128, 9) (2947, 128, 9)
+
+Classical track uses ONLY these 6 features:
+   1. tBodyAcc-max()-X
+   2. tGravityAcc-min()-Y
+   3. tBodyAccJerk-max()-X
+   4. tGravityAcc-max()-Y
+   5. tBodyAccMag-max()
+   6. tGravityAccMag-max()
+
+[1/8] Logistic Regression (6 selected features)
+   acc 0.7869  macroF1 0.7851
+
+[2/8] Random Forest (6 selected features)
+   acc 0.7418  macroF1 0.7393
+
+Subject-wise split: 5588 train / 1764 val windows (val subjects [3, 15, 16, 21, 22])
+
+[3/8] Main Transformer
+  epoch 01/20 | train f1 0.6476 acc 0.6602 | val f1 0.8229 acc 0.8294
+  epoch 02/20 | train f1 0.9097 acc 0.9100 | val f1 0.8977 acc 0.8974
+  epoch 03/20 | train f1 0.9432 acc 0.9415 | val f1 0.9003 acc 0.9014
+  epoch 04/20 | train f1 0.9515 acc 0.9492 | val f1 0.8833 acc 0.8804
+  epoch 05/20 | train f1 0.9532 acc 0.9508 | val f1 0.9068 acc 0.9070
+  epoch 06/20 | train f1 0.9544 acc 0.9520 | val f1 0.8958 acc 0.8968
+  epoch 07/20 | train f1 0.9567 acc 0.9542 | val f1 0.8817 acc 0.8793
+  epoch 08/20 | train f1 0.9589 acc 0.9565 | val f1 0.8920 acc 0.8889
+  epoch 09/20 | train f1 0.9589 acc 0.9565 | val f1 0.8931 acc 0.8900
+  epoch 10/20 | train f1 0.9600 acc 0.9576 | val f1 0.8672 acc 0.8639
+  epoch 11/20 | train f1 0.9594 acc 0.9571 | val f1 0.8645 acc 0.8622
+  epoch 12/20 | train f1 0.9613 acc 0.9588 | val f1 0.8863 acc 0.8844
+  epoch 13/20 | train f1 0.9634 acc 0.9612 | val f1 0.8928 acc 0.8900
+  epoch 14/20 | train f1 0.9629 acc 0.9606 | val f1 0.8916 acc 0.8883
+  epoch 15/20 | train f1 0.9644 acc 0.9622 | val f1 0.8895 acc 0.8866
+  epoch 16/20 | train f1 0.9641 acc 0.9619 | val f1 0.8911 acc 0.8883
+  epoch 17/20 | train f1 0.9644 acc 0.9622 | val f1 0.8865 acc 0.8838
+  epoch 18/20 | train f1 0.9661 acc 0.9640 | val f1 0.8898 acc 0.8872
+  epoch 19/20 | train f1 0.9659 acc 0.9639 | val f1 0.8898 acc 0.8872
+  epoch 20/20 | train f1 0.9656 acc 0.9635 | val f1 0.8898 acc 0.8872
+   test acc 0.8833  macroF1 0.8817  ECE 0.0484
+
+[4/8] Transformer ablation study (validation-only)
+   A1_no_pos_mean               val macroF1 0.8974
+   A2_sinusoidal_mean           val macroF1 0.9134
+   A3_learnable_mean            val macroF1 0.9251
+   A4_sinusoidal_cls            val macroF1 0.9214
+   A5_patch8_sinusoidal_cls     val macroF1 0.9368
+   A6_deeper_4layers_cls        val macroF1 0.9158
+   A7_more_heads_8_cls          val macroF1 0.9234
+
+[5/8] Patch Transformer (patch_size=8)
+  epoch 01/20 | train f1 0.7037 acc 0.7101 | val f1 0.8454 acc 0.8452
+  epoch 02/20 | train f1 0.9325 acc 0.9309 | val f1 0.8699 acc 0.8656
+  epoch 03/20 | train f1 0.9517 acc 0.9495 | val f1 0.8682 acc 0.8639
+  epoch 04/20 | train f1 0.9530 acc 0.9504 | val f1 0.9089 acc 0.9053
+  epoch 05/20 | train f1 0.9556 acc 0.9533 | val f1 0.9019 acc 0.8951
+  epoch 06/20 | train f1 0.9560 acc 0.9535 | val f1 0.8863 acc 0.8798
+  epoch 07/20 | train f1 0.9569 acc 0.9544 | val f1 0.9111 acc 0.9059
+  epoch 08/20 | train f1 0.9588 acc 0.9563 | val f1 0.8931 acc 0.8866
+  epoch 09/20 | train f1 0.9615 acc 0.9592 | val f1 0.8794 acc 0.8724
+  epoch 10/20 | train f1 0.9631 acc 0.9608 | val f1 0.8864 acc 0.8815
+  epoch 11/20 | train f1 0.9629 acc 0.9606 | val f1 0.8835 acc 0.8787
+  epoch 12/20 | train f1 0.9639 acc 0.9617 | val f1 0.8956 acc 0.8906
+  epoch 13/20 | train f1 0.9629 acc 0.9606 | val f1 0.8856 acc 0.8815
+  epoch 14/20 | train f1 0.9646 acc 0.9624 | val f1 0.8945 acc 0.8895
+  epoch 15/20 | train f1 0.9646 acc 0.9624 | val f1 0.8908 acc 0.8872
+  epoch 16/20 | train f1 0.9655 acc 0.9633 | val f1 0.8900 acc 0.8855
+  epoch 17/20 | train f1 0.9679 acc 0.9658 | val f1 0.8863 acc 0.8821
+  epoch 18/20 | train f1 0.9652 acc 0.9631 | val f1 0.8906 acc 0.8861
+  epoch 19/20 | train f1 0.9659 acc 0.9639 | val f1 0.8910 acc 0.8861
+  epoch 20/20 | train f1 0.9647 acc 0.9626 | val f1 0.8915 acc 0.8866
+   test acc 0.9006  macroF1 0.8994
+
+[6/8] CNN-Transformer hybrid
+  epoch 01/20 | train f1 0.7661 acc 0.7724 | val f1 0.8809 acc 0.8713
+  epoch 02/20 | train f1 0.9543 acc 0.9517 | val f1 0.8847 acc 0.8741
+  epoch 03/20 | train f1 0.9569 acc 0.9542 | val f1 0.9255 acc 0.9201
+  epoch 04/20 | train f1 0.9597 acc 0.9572 | val f1 0.9173 acc 0.9104
+  epoch 05/20 | train f1 0.9606 acc 0.9581 | val f1 0.9144 acc 0.9070
+  epoch 06/20 | train f1 0.9609 acc 0.9585 | val f1 0.8994 acc 0.8900
+  epoch 07/20 | train f1 0.9617 acc 0.9594 | val f1 0.8948 acc 0.8861
+  epoch 08/20 | train f1 0.9610 acc 0.9585 | val f1 0.9007 acc 0.8912
+  epoch 09/20 | train f1 0.9619 acc 0.9596 | val f1 0.8946 acc 0.8844
+  epoch 10/20 | train f1 0.9634 acc 0.9612 | val f1 0.8997 acc 0.8912
+  epoch 11/20 | train f1 0.9634 acc 0.9612 | val f1 0.9009 acc 0.8929
+  epoch 12/20 | train f1 0.9637 acc 0.9615 | val f1 0.8963 acc 0.8878
+  epoch 13/20 | train f1 0.9660 acc 0.9639 | val f1 0.8997 acc 0.8900
+  epoch 14/20 | train f1 0.9655 acc 0.9633 | val f1 0.8959 acc 0.8861
+  epoch 15/20 | train f1 0.9673 acc 0.9653 | val f1 0.8926 acc 0.8827
+  epoch 16/20 | train f1 0.9672 acc 0.9651 | val f1 0.8964 acc 0.8866
+  epoch 17/20 | train f1 0.9656 acc 0.9635 | val f1 0.8984 acc 0.8889
+  epoch 18/20 | train f1 0.9675 acc 0.9655 | val f1 0.8975 acc 0.8878
+  epoch 19/20 | train f1 0.9653 acc 0.9631 | val f1 0.8984 acc 0.8889
+  epoch 20/20 | train f1 0.9692 acc 0.9673 | val f1 0.8980 acc 0.8883
+   test acc 0.8958  macroF1 0.8959
+
+[7/8] Sensor ablation (channel groups)
+   all_sensors                          test macroF1 0.8805
+   acceleration_only_total_plus_body    test macroF1 0.8355
+   gyroscope_only                       test macroF1 0.4840
+   total_acc_only                       test macroF1 0.7890
+   body_acc_only                        test macroF1 0.5300
+
+[8/8] Fourier+Transformer (dual-branch time + FFT)
+   parameters: 136326
+  epoch 01/20 | train f1 0.6526 acc 0.6682 | val f1 0.8257 acc 0.8305
+  epoch 02/20 | train f1 0.9195 acc 0.9188 | val f1 0.8692 acc 0.8696
+  epoch 03/20 | train f1 0.9483 acc 0.9461 | val f1 0.8617 acc 0.8605
+  epoch 04/20 | train f1 0.9494 acc 0.9470 | val f1 0.9167 acc 0.9167
+  epoch 05/20 | train f1 0.9530 acc 0.9506 | val f1 0.9192 acc 0.9195
+  epoch 06/20 | train f1 0.9571 acc 0.9545 | val f1 0.9152 acc 0.9155
+  epoch 07/20 | train f1 0.9564 acc 0.9540 | val f1 0.8821 acc 0.8804
+  epoch 08/20 | train f1 0.9620 acc 0.9601 | val f1 0.9104 acc 0.9104
+  epoch 09/20 | train f1 0.9648 acc 0.9631 | val f1 0.9044 acc 0.9048
+  epoch 10/20 | train f1 0.9725 acc 0.9708 | val f1 0.9244 acc 0.9257
+  epoch 11/20 | train f1 0.9704 acc 0.9685 | val f1 0.9159 acc 0.9167
+  epoch 12/20 | train f1 0.9775 acc 0.9760 | val f1 0.9195 acc 0.9212
+  epoch 13/20 | train f1 0.9783 acc 0.9769 | val f1 0.9141 acc 0.9155
+  epoch 14/20 | train f1 0.9812 acc 0.9800 | val f1 0.9199 acc 0.9218
+  epoch 15/20 | train f1 0.9811 acc 0.9800 | val f1 0.9230 acc 0.9240
+  epoch 16/20 | train f1 0.9814 acc 0.9801 | val f1 0.9150 acc 0.9161
+  epoch 17/20 | train f1 0.9827 acc 0.9816 | val f1 0.9151 acc 0.9161
+  epoch 18/20 | train f1 0.9840 acc 0.9830 | val f1 0.9190 acc 0.9206
+  epoch 19/20 | train f1 0.9837 acc 0.9826 | val f1 0.9139 acc 0.9150
+  epoch 20/20 | train f1 0.9852 acc 0.9843 | val f1 0.9139 acc 0.9150
+   test acc 0.9050  macroF1 0.9025
+
+======================================================================
+FINAL COMPARISON (by test macro-F1)
+                                              model  accuracy  macro_f1
+              Fourier+Transformer - Time+FFT Fusion  0.904988  0.902465
+              Patch Transformer - patch size 8, CLS  0.900577  0.899365
+  CNN-Transformer Hybrid - Conv1D + CLS Transformer  0.895826  0.895894
+            Main Transformer - timestep tokens, CLS  0.883271  0.881651
+                      Sensor ablation - all_sensors  0.881914  0.880528
+Sensor ablation - acceleration_only_total_plus_body  0.839837  0.835519
+                   Sensor ablation - total_acc_only  0.794367  0.789045
+          Logistic Regression - 6 selected features  0.786902  0.785056
+                Random Forest - 6 selected features  0.741771  0.739266
+                    Sensor ablation - body_acc_only  0.572786  0.530042
+                   Sensor ablation - gyroscope_only  0.488293  0.484014
+
+All artifacts written to: /home/potashda/DS-HAR/transformer + fouria/outputs
+
+ finished : Sun 14 Jun 2026 22:58:50 IDT
+==========================================================
