@@ -1,0 +1,15 @@
+Best model: logreg
+
+                    precision    recall  f1-score   support
+
+           WALKING     0.9636    0.9617    0.9627       496
+  WALKING_UPSTAIRS     0.9495    0.9575    0.9535       471
+WALKING_DOWNSTAIRS     0.9712    0.9643    0.9677       420
+           SITTING     0.8878    0.7576    0.8176       491
+          STANDING     0.8046    0.9135    0.8556       532
+            LAYING     0.9981    0.9981    0.9981       537
+
+          accuracy                         0.9253      2947
+         macro avg     0.9292    0.9255    0.9259      2947
+      weighted avg     0.9274    0.9253    0.9249      2947
+

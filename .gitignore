@@ -216,3 +216,11 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# --- project-specific (HW3 Fourier track) ---
+data/
+context/
+.vscode/
+.DS_Store
+# generated large feature matrices (reproducible via fourier_model.py)
+hw3_fourier/outputs/*.csv
