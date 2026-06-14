@@ -1,0 +1,103 @@
+{
+  "n_features": 165,
+  "channels": [
+    "body_acc_x",
+    "body_acc_y",
+    "body_acc_z",
+    "body_gyro_x",
+    "body_gyro_y",
+    "body_gyro_z",
+    "total_acc_x",
+    "total_acc_y",
+    "total_acc_z",
+    "body_acc_mag",
+    "body_gyro_mag"
+  ],
+  "cv_macro_f1": {
+    "logreg": {
+      "mean": 0.9176690523247444,
+      "std": 0.023376959947017665
+    },
+    "rbf_svm": {
+      "mean": 0.9149957035644304,
+      "std": 0.02872399097329535
+    },
+    "random_forest": {
+      "mean": 0.9058515014154496,
+      "std": 0.04214616780545742
+    }
+  },
+  "test": {
+    "logreg": {
+      "accuracy": 0.9253478113335596,
+      "macro_f1": 0.9258747177275546
+    },
+    "rbf_svm": {
+      "accuracy": 0.9280624363759755,
+      "macro_f1": 0.9291531129022187
+    },
+    "random_forest": {
+      "accuracy": 0.9362063115032236,
+      "macro_f1": 0.9358894115671124
+    }
+  },
+  "best_model": "logreg",
+  "confusion_matrix_labels": [
+    "WALKING",
+    "WALKING_UPSTAIRS",
+    "WALKING_DOWNSTAIRS",
+    "SITTING",
+    "STANDING",
+    "LAYING"
+  ],
+  "confusion_matrix": [
+    [
+      477,
+      14,
+      5,
+      0,
+      0,
+      0
+    ],
+    [
+      13,
+      451,
+      7,
+      0,
+      0,
+      0
+    ],
+    [
+      5,
+      10,
+      405,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      372,
+      118,
+      1
+    ],
+    [
+      0,
+      0,
+      0,
+      46,
+      486,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      1,
+      0,
+      536
+    ]
+  ]
+}
