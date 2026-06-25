@@ -1,0 +1,86 @@
+{
+  "class_counts_train": {
+    "WALKING": 1226,
+    "WALK_UP": 1073,
+    "WALK_DOWN": 986,
+    "SITTING": 1286,
+    "STANDING": 1374,
+    "LAYING": 1407
+  },
+  "class_counts_test": {
+    "WALKING": 496,
+    "WALK_UP": 471,
+    "WALK_DOWN": 420,
+    "SITTING": 491,
+    "STANDING": 532,
+    "LAYING": 537
+  },
+  "class_balance_ratio_train": 1.427,
+  "subjects_train": 21,
+  "subjects_test": 9,
+  "per_subject_windows_train": {
+    "min": 281,
+    "max": 409,
+    "mean": 350.1
+  },
+  "total_acc_axis_means_g": {
+    "WALKING": [
+      0.9959999918937683,
+      -0.18199999630451202,
+      -0.0689999982714653
+    ],
+    "WALK_UP": [
+      0.9490000009536743,
+      -0.27300000190734863,
+      -0.1550000011920929
+    ],
+    "WALK_DOWN": [
+      0.9919999837875366,
+      -0.14800000190734863,
+      -0.0560000017285347
+    ],
+    "SITTING": [
+      0.9509999752044678,
+      0.14300000667572021,
+      0.15399999916553497
+    ],
+    "STANDING": [
+      1.0010000467300415,
+      -0.16300000250339508,
+      -0.03200000151991844
+    ],
+    "LAYING": [
+      0.07199999690055847,
+      0.6499999761581421,
+      0.5600000023841858
+    ]
+  },
+  "sampling_rate_hz": 50.0,
+  "window_len_samples": 128,
+  "window_seconds": 2.56,
+  "channels": [
+    "total_acc_x",
+    "total_acc_y",
+    "total_acc_z",
+    "body_acc_x",
+    "body_acc_y",
+    "body_acc_z",
+    "body_gyro_x",
+    "body_gyro_y",
+    "body_gyro_z"
+  ],
+  "raw_value_range": {
+    "total_acc_min": -1.64,
+    "total_acc_max": 2.198,
+    "body_gyro_min": -5.974,
+    "body_gyro_max": 5.746
+  },
+  "motion_std_by_class_g": {
+    "WALKING": 0.1246,
+    "WALK_UP": 0.142,
+    "WALK_DOWN": 0.2117,
+    "SITTING": 0.013,
+    "STANDING": 0.0112,
+    "LAYING": 0.0156
+  }
+}
