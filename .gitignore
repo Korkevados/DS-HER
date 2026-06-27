@@ -239,3 +239,42 @@ transformer + fouria/outputs/
 # MS Office / temp lock files
 ~$*
 *.tmp
+
+# ── HW4 submission .gitignore ─────────────────────────────────────────────
+# Ignore environments, dependency caches and tooling cruft.
+# The deliverables (report, notebook, deck, live_demo_app, assets, _build
+# scripts) and the small model checkpoints/artifacts they need ARE tracked.
+
+# Python virtual environment (large; recreate with: pip install -r requirements.txt)
+.venv/
+venv/
+env/
+
+# Python caches / build
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+
+# Node / PptxGenJS tooling (only needed to regenerate the decks)
+node_modules/
+package.json
+package-lock.json
+npm-debug.log*
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*~
+
+# Logs & scratch
+*.log
+*.tmp
+/tmp/
