@@ -1,0 +1,63 @@
+{
+  "architecture": "FourierTransformer (dual-branch time+FFT)",
+  "best_config": "aug",
+  "best_seed": 2,
+  "test_acc": 0.9484221241940957,
+  "test_macro_f1": 0.9476736246219403,
+  "model_kwargs": {
+    "in_ch": 9,
+    "seq_len": 128,
+    "num_classes": 6,
+    "d_model": 64,
+    "nhead": 4,
+    "num_layers": 2,
+    "dim_ff": 128,
+    "dropout": 0.15
+  },
+  "channel_order": [
+    "total_acc_x",
+    "total_acc_y",
+    "total_acc_z",
+    "body_acc_x",
+    "body_acc_y",
+    "body_acc_z",
+    "body_gyro_x",
+    "body_gyro_y",
+    "body_gyro_z"
+  ],
+  "input_norm": {
+    "type": "per-channel z-score (train stats)",
+    "mean": [
+      0.8039517998695374,
+      0.028755413368344307,
+      0.08649728447198868,
+      -0.0006363163120113313,
+      -0.0002922959974966943,
+      -0.0002753041626419872,
+      0.0005063982680439949,
+      -0.0008237347356043756,
+      0.00011293507122900337
+    ],
+    "std": [
+      0.41408979892730713,
+      0.39084190130233765,
+      0.35768282413482666,
+      0.19478365778923035,
+      0.12235899269580841,
+      0.10680177807807922,
+      0.4066532850265503,
+      0.38166430592536926,
+      0.25563251972198486
+    ]
+  },
+  "class_index_to_name": {
+    "0": "WALKING",
+    "1": "WALKING_UPSTAIRS",
+    "2": "WALKING_DOWNSTAIRS",
+    "3": "SITTING",
+    "4": "STANDING",
+    "5": "LAYING"
+  },
+  "checkpoint_file": "fourier_transformer_best.pt",
+  "how_to_load": "model = FourierTransformer(**model_kwargs); model.load_state_dict(torch.load(checkpoint_file, map_location='cpu')); model.eval(). Input: (B,128,9) in SIGNAL_NAMES order, z-scored with input_norm mean/std."
+}

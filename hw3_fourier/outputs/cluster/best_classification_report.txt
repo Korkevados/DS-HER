@@ -1,0 +1,15 @@
+Best config: aug (seed 2)
+
+                    precision    recall  f1-score   support
+
+           WALKING     0.9752    0.9496    0.9622       496
+  WALKING_UPSTAIRS     0.9862    0.9130    0.9482       471
+WALKING_DOWNSTAIRS     0.8894    0.9952    0.9393       420
+           SITTING     0.9453    0.8798    0.9114       491
+          STANDING     0.9037    0.9530    0.9277       532
+            LAYING     0.9944    1.0000    0.9972       537
+
+          accuracy                         0.9484      2947
+         macro avg     0.9490    0.9484    0.9477      2947
+      weighted avg     0.9503    0.9484    0.9484      2947
+

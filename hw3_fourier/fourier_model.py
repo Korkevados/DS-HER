@@ -277,6 +277,16 @@ def main():
     if "random_forest" in fitted:
         plot_feature_importance(fitted["random_forest"], X_train.columns)
 
+    # ---- Save the best trained pipeline for reuse ---------------------- #
+    import joblib
+    model_path = OUT / "fourier_model_best.joblib"
+    joblib.dump({"pipeline": best, "model_name": best_name,
+                 "feature_names": list(X_train.columns),
+                 "channels": ALL_CHANNELS,
+                 "label_order": LABEL_ORDER, "activity_names": ACTIVITY_NAMES},
+                model_path)
+    print(f">> Saved best pipeline ({best_name}) -> {model_path}")
+
     print(f"\n>> Done. Outputs written to {OUT}")
 
 
