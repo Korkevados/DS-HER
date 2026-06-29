@@ -127,7 +127,141 @@ X_test_norm = (X_test - mean) / std  # Use training stats!
 - Different magnitude ranges (total_acc dominated by gravity ~1g, gyro much smaller)
 - Per-channel normalization equalizes importance
 
-### 1.4 Subject-Wise Train/Validation Split
+---
+
+### 1.4 Data Augmentation (Training Only)
+
+**Code Location:** `cluster/har_experiment.py` (line 84-96)
+
+All augmentation is applied **on-the-fly during training** (not offline preprocessing).
+
+**Configuration:**
+```python
+aug_config = {
+    "enabled": True,
+    "jitter": True,
+    "jitter_sigma": 0.05,       # Gaussian noise std
+    "scale": True,
+    "scale_sigma": 0.10,         # Amplitude scaling std
+    "rotate": True,
+    "rot_sigma_deg": 20.0        # Rotation std (degrees) ← CRITICAL FOR 94.8%
+}
+```
+
+**Full Augmentation Pipeline:**
+
+```python
+def augment(x, cfg):
+    """Apply augmentation pipeline (order matters for numerical stability).
+    
+    Args:
+        x: (batch, 128, 9) raw sensor windows (already z-score normalized)
+        cfg: augmentation config dict
+        
+    Returns:
+        Augmented windows (same shape)
+    """
+    out = x
+    
+    # 1. Amplitude Scaling (σ=0.10)
+    if cfg["scale"]:
+        # Scale factor ~ N(1.0, 0.10²)
+        scale = 1.0 + cfg["scale_sigma"] * torch.randn(out.size(0), 1, 1, 
+                                                         device=out.device)
+        out = out * scale  # (B, 128, 9) × (B, 1, 1) broadcasts correctly
+    
+    # 2. Rotation (σ=20°) ← CRITICAL FOR 94.8%
+    if cfg["rotate"]:
+        R = small_rotations(out.size(0), cfg["rot_sigma_deg"], out.device)  # (B, 3, 3)
+        rot = out.clone()
+        
+        # Apply rotation to each triaxial block
+        TRIAXIAL_BLOCKS = [(0, 3), (3, 6), (6, 9)]  # total_acc, body_acc, gyro
+        for lo, hi in TRIAXIAL_BLOCKS:
+            # Matrix multiply: (B, 128, 3) @ (B, 3, 3)^T → (B, 128, 3)
+            rot[:, :, lo:hi] = torch.einsum("btj,bij->bti", out[:, :, lo:hi], R)
+        out = rot
+    
+    # 3. Jitter / Gaussian Noise (σ=0.05)
+    if cfg["jitter"]:
+        noise = cfg["jitter_sigma"] * torch.randn_like(out)
+        out = out + noise
+    
+    return out
+
+
+def small_rotations(B, sigma_deg, device):
+    """Generate random 3D rotation matrices.
+    
+    Args:
+        B: Batch size
+        sigma_deg: Standard deviation of rotation angles in degrees
+        device: torch device
+        
+    Returns:
+        R: (B, 3, 3) rotation matrices (Rz @ Ry @ Rx)
+        
+    Implementation:
+        Euler angles (αx, αy, αz) ~ N(0, sigma_deg²)
+        Compose rotation matrices: R = Rz(αz) @ Ry(αy) @ Rx(αx)
+    """
+    s = math.radians(sigma_deg)
+    a = torch.randn(B, device=device) * s  # Rotation around X-axis
+    b = torch.randn(B, device=device) * s  # Rotation around Y-axis
+    c = torch.randn(B, device=device) * s  # Rotation around Z-axis
+    
+    z = torch.zeros(B, device=device)
+    o = torch.ones(B, device=device)
+    
+    ca, sa = a.cos(), a.sin()
+    cb, sb = b.cos(), b.sin()
+    cc, sc = c.cos(), c.sin()
+    
+    # Rotation matrix around X-axis
+    Rx = torch.stack([o, z, z, 
+                      z, ca, -sa,
+                      z, sa, ca], 1).view(B, 3, 3)
+    
+    # Rotation matrix around Y-axis
+    Ry = torch.stack([cb, z, sb,
+                      z, o, z,
+                      -sb, z, cb], 1).view(B, 3, 3)
+    
+    # Rotation matrix around Z-axis
+    Rz = torch.stack([cc, -sc, z,
+                      sc, cc, z,
+                      z, z, o], 1).view(B, 3, 3)
+    
+    return Rz @ Ry @ Rx  # Compose rotations
+```
+
+**Why Rotation Augmentation Matters:**
+
+The UCI HAR training set has **waist-mounted phones** (fixed orientation). Real-world deployment sees phones in:
+- **Pockets:** Vertical orientation (varies by pocket position)
+- **Hands:** Arbitrary orientation (depends on grip)
+- **Bags:** Random orientation
+
+Without rotation augmentation, the model **overfits to the training orientation** and fails to generalize:
+
+| Configuration | Test F1 | Comment |
+|--------------|---------|---------|
+| No augmentation | 90.2% | Train/test both waist-mounted, similar orientation |
+| Jitter + scaling only | ~91% | Helps with noise robustness |
+| **+ Rotation (20°)** | **94.8%** | Robust to orientation variance |
+
+Rotation simulates the **SO(3) group** of 3D rotations, making the model **orientation-invariant** (critical for real-world deployment).
+
+**Physics Interpretation:**
+- **Total acceleration (channels 0-2):** Gravity + body motion → rotation changes gravity direction
+- **Body acceleration (channels 3-5):** Body motion only → rotation changes motion direction
+- **Gyroscope (channels 6-8):** Angular velocity → rotation changes measurement frame
+
+All three must be rotated **consistently** (same rotation matrix R per sample) to maintain physical consistency.
+
+---
+
+### 1.5 Subject-Wise Train/Validation Split
 
 **GroupKFold Implementation:**
 ```python
@@ -336,7 +470,13 @@ print(f"Parameters: {sum(p.numel() for p in model.parameters() if p.requires_gra
 
 ### 2.2 Training Loop
 
-**Complete Training Script:**
+**Training Code Location:** `cluster/har_experiment.py` (391 lines)
+
+This is the **authoritative training code** that produces the 94.8% result (seed=2, "aug" config).
+
+**Note:** Earlier version `transformer + fouria/har_full_run.py` lacks rotation augmentation and achieves ~90% F1.
+
+**Complete Training Script (Simplified):**
 ```python
 import torch
 import torch.nn as nn

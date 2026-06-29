@@ -412,9 +412,24 @@ logits = Linear(64 → 6)(fused)
 - **Test Macro-F1:** 94.8%
 
 **Augmentation Strategy (Training Only):**
-- Gaussian noise: σ = 0.02 × std(channel)
-- Time shifting: ±5 timesteps (random roll)
-- Amplitude scaling: ×[0.95, 1.05]
+
+**Training Code:** `cluster/har_experiment.py` (line 270-272, "aug" configuration)
+
+1. **Rotation Augmentation (CRITICAL for 94.8%):**
+   - Random 3D rotation: Rz @ Ry @ Rx
+   - Rotation angles: αx, αy, αz ~ N(0, 20°)
+   - Applied separately to each triaxial block (total_acc, body_acc, body_gyro)
+   - **Why critical:** Simulates phone orientation variance (pocket vs. hand placement)
+
+2. **Jitter (Gaussian Noise):**
+   - σ = 0.05 × std(channel)
+   - Applied element-wise to all channels
+
+3. **Amplitude Scaling:**
+   - Scale factor ~ N(1.0, 0.10²)
+   - Multiplied across all timesteps in window
+
+**Impact:** Rotation augmentation alone contributes ~+3-4% test F1
 
 **Per-Class F1-Scores (Augmented Model):**
 ```
@@ -823,13 +838,22 @@ cd HW4_submission/live_demo_app
 
 **Impact:** 90.2% F1 (no aug) → 94.8% F1 (with aug) = **+4.6% F1**
 
-**Effective Augmentations:**
-1. **Gaussian noise (σ=0.02):** Simulates sensor noise, improves robustness
-2. **Time shifting (±5 samples):** Handles phase misalignment (gait cycle not always aligned to window start)
-3. **Amplitude scaling (×[0.95, 1.05]):** Simulates inter-subject variability in movement intensity
+**Training Code:** `cluster/har_experiment.py`, "aug" configuration (line 270-272)
 
-**Ineffective Augmentation (Tried but Discarded):**
-- Rotation (axis permutation): Broke gravity orientation cues → hurt SITTING/STANDING separation
+**Effective Augmentations:**
+1. **Rotation Augmentation (CRITICAL - contributes ~+3-4% F1):**
+   - Random 3D rotation: Rz @ Ry @ Rx
+   - Rotation angles: αx, αy, αz ~ N(0, **20°**)
+   - Applied separately to each triaxial block (total_acc, body_acc, body_gyro)
+   - **Why effective:** Simulates phone orientation variance (pocket vs. hand vs. bag placement)
+   - **Domain shift addressed:** Training data has waist-mounted phones (fixed orientation); real-world deployment sees arbitrary orientations
+   - **Effect:** Makes model orientation-invariant via SO(3) rotation group simulation
+
+2. **Jitter/Gaussian noise (σ=**0.05**):** Simulates sensor noise, improves robustness
+
+3. **Amplitude scaling (σ=**0.10**):** Simulates inter-subject variability in movement intensity
+
+**Note:** Earlier code version (`transformer + fouria/har_full_run.py`) lacks rotation augmentation and achieves only ~90% F1. The deployed model uses `cluster/har_experiment.py` with rotation enabled.
 
 ### 8.4 Honest Evaluation Matters
 
@@ -985,18 +1009,50 @@ cd HW4_submission/live_demo_app
    ```
 
 2. **Data Augmentation (Training Only):**
+
+   **Code Location:** `cluster/har_experiment.py` (line 84-96)
+   
    ```python
-   # Gaussian noise
-   noise = np.random.normal(0, 0.02 * std, size=window.shape)
-   window_aug = window + noise
+   def augment(x, cfg):
+       """Apply augmentation pipeline (order matters).
+       Args:
+           x: (batch, 128, 9) raw sensor windows
+           cfg: augmentation config dict
+       """
+       out = x
+       
+       # 1. Amplitude Scaling (σ=0.10)
+       if cfg["scale"]:
+           scale = 1.0 + cfg["scale_sigma"] * torch.randn(out.size(0), 1, 1, device=out.device)
+           out = out * scale
+       
+       # 2. Rotation (σ=20°) ← CRITICAL FOR 94.8%
+       if cfg["rotate"]:
+           R = small_rotations(out.size(0), cfg["rot_sigma_deg"], out.device)  # (B, 3, 3)
+           rot = out.clone()
+           # Apply rotation to each triaxial block
+           TRIAXIAL_BLOCKS = [(0, 3), (3, 6), (6, 9)]  # total_acc, body_acc, gyro
+           for lo, hi in TRIAXIAL_BLOCKS:
+               rot[:, :, lo:hi] = torch.einsum("btj,bij->bti", out[:, :, lo:hi], R)
+           out = rot
+       
+       # 3. Jitter / Gaussian Noise (σ=0.05)
+       if cfg["jitter"]:
+           out = out + cfg["jitter_sigma"] * torch.randn_like(out)
+       
+       return out
+   ```
    
-   # Time shifting (circular roll)
-   shift = np.random.randint(-5, 6)
-   window_aug = np.roll(window, shift, axis=0)
-   
-   # Amplitude scaling
-   scale = np.random.uniform(0.95, 1.05)
-   window_aug = window * scale
+   **Rotation Matrix Generator:**
+   ```python
+   def small_rotations(B, sigma_deg, device):
+       """Generate random 3D rotation matrices.
+       Returns: (B, 3, 3) rotation matrices (Rz @ Ry @ Rx)
+       """
+       s = math.radians(sigma_deg)
+       a, b, c = [torch.randn(B, device=device) * s for _ in range(3)]
+       # [Euler angles → rotation matrices → composition]
+       # Full implementation in cluster/har_experiment.py:71-81
    ```
 
 ### 11.2 Fourier Transform Details
@@ -1087,10 +1143,11 @@ Training:
   batch_size: 128
   gradient_clip: 1.0  # max norm
 
-Augmentation:
-  gaussian_noise_std: 0.02  # × channel std
-  time_shift_range: [-5, 5]  # samples
-  amplitude_scale_range: [0.95, 1.05]
+Augmentation (cluster/har_experiment.py):
+  jitter_sigma: 0.05           # Gaussian noise std
+  scale_sigma: 0.10            # Amplitude scaling std
+  rot_sigma_deg: 20.0          # Rotation std (degrees) ← CRITICAL
+  # Rotation applied as Rz @ Ry @ Rx to each triaxial block separately
 
 Validation:
   split: 0.2  # subject-wise

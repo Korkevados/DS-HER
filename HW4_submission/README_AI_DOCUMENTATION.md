@@ -112,9 +112,12 @@ DS-HER/
 │       ├── live_core.py                 ← Preprocessing
 │       ├── Dockerfile                   ← Container image
 │       └── artifacts/                   ← (same as above)
-├── transformer + fouria/                ← Full training pipeline
-│   ├── har_full_run.py                  ← Complete experiment script
-│   └── README.md                        ← SLURM cluster guide
+├── cluster/                             ← PRIMARY training code (94.8%)
+│   ├── har_experiment.py                ← Produces deployed model (with rotation aug)
+│   └── run_har.slurm                    ← SLURM batch script
+├── transformer + fouria/                ← Earlier version (~90%)
+│   ├── har_full_run.py                  ← Without rotation augmentation
+│   └── README.md                        ← Reference only
 ├── baselines/                           ← Classical ML experiments
 │   ├── hw3_modeling.py                  ← 561-feature baselines
 │   └── select6_features.py              ← Feature selection
@@ -157,11 +160,24 @@ DS-HER/
    # Notebook is already executed - just scroll through
    ```
 
-3. **Full Training (Reproduce from scratch):**
+3. **Full Training (Reproduce 94.8% result):**
+   ```bash
+   cd cluster
+   python har_experiment.py \
+       --data_dir "/path/to/UCI HAR Dataset" \
+       --out_dir results \
+       --configs aug \
+       --seeds 2 \
+       --epochs 25
+   # Outputs: results/fourier_transformer_best.pt, summary.json
+   # Note: "aug" config includes rotation augmentation (critical!)
+   ```
+   
+   **Alternative (older code, ~90% F1):**
    ```bash
    cd "transformer + fouria"
    python har_full_run.py --data /path/to/"UCI HAR Dataset"
-   # Outputs: metrics.json, training curves, confusion matrices
+   # This version lacks rotation augmentation
    ```
 
 4. **Live Deployment:**
@@ -186,8 +202,9 @@ Refer to `AI_COMPREHENSIVE_DOCUMENTATION.md` § 9.2 for:
 - **Reference:** `TECHNICAL_SPECIFICATIONS.md` § 2.1 (full PyTorch code)
 
 ### Training Code
-- **Full Pipeline:** `transformer + fouria/har_full_run.py` (self-contained, 724 lines)
-- **Pseudocode:** `TECHNICAL_SPECIFICATIONS.md` § 5.2
+- **Primary (94.8%):** `cluster/har_experiment.py` (391 lines, includes rotation augmentation)
+- **Reference (~90%):** `transformer + fouria/har_full_run.py` (earlier version, no rotation)
+- **Pseudocode:** `TECHNICAL_SPECIFICATIONS.md` § 2.2
 
 ### Results & Metrics
 - **All Experiments:** `HW4_submission/option1_display_only/metrics.json`
@@ -220,8 +237,9 @@ Refer to `AI_COMPREHENSIVE_DOCUMENTATION.md` § 9.2 for:
 
 ### 4. Data Augmentation is Critical
 - 90.2% F1 (no augmentation) → 94.8% F1 (with augmentation) = **+4.6% gain**
-- Effective: Gaussian noise, time shifting, amplitude scaling
-- Ineffective: Rotation (breaks gravity orientation cues)
+- **CRITICAL:** Rotation augmentation (σ=20° on triaxial blocks) simulates phone orientation variance
+- Effective: Rotation, jitter (σ=0.05), amplitude scaling (σ=0.10)
+- Training code: `cluster/har_experiment.py` (line 270-272, "aug" config)
 
 ### 5. Classical Baselines Are Strong
 - Logistic Regression on 561 engineered features: **95.6% F1**
