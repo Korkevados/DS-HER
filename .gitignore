@@ -216,17 +216,3 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
-
-# --- project-specific (HW3 Fourier track) ---
-# UCI HAR dataset (download separately) and assignment PDFs
-data/
-context/
-.vscode/
-.DS_Store
-._*
-# generated large feature matrices (reproducible via fourier_model.py)
-hw3_fourier/outputs/*.csv
-# build artifacts / staging (regenerable)
-*.zip
-hw3_fourier/_package/
-hw3_fourier/_models_package/

@@ -1,0 +1,12 @@
+model,accuracy,macro_f1
+Fourier+Transformer - Time+FFT Fusion,0.9049881235154394,0.9024653476855602
+"Patch Transformer - patch size 8, CLS",0.9005768578215134,0.8993647469887477
+CNN-Transformer Hybrid - Conv1D + CLS Transformer,0.8958262639972854,0.895894093298604
+"Main Transformer - timestep tokens, CLS",0.8832711231761113,0.8816512460399973
+Sensor ablation - all_sensors,0.8819138106549033,0.8805281941995987
+Sensor ablation - acceleration_only_total_plus_body,0.839837122497455,0.8355190578500209
+Sensor ablation - total_acc_only,0.7943671530369868,0.7890453803548702
+Logistic Regression - 6 selected features,0.7869019341703427,0.7850561386615981
+Random Forest - 6 selected features,0.7417712928401764,0.7392663328797031
+Sensor ablation - body_acc_only,0.5727858839497795,0.5300418571399014
+Sensor ablation - gyroscope_only,0.48829317950458095,0.48401440230794956
